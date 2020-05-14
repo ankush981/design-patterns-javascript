@@ -66,3 +66,48 @@ console.log(redProducts);
 // we need to filter by both color and size, and soon, filter by color or
 // size. You get the idea: the more properties we have, the more possible
 // combinations there'll be. There's no way this is going to scale neatly!
+
+// This problem of granular configuration is common enough in enterprise
+// software, and has a design pattern that solves it neatly: Specification!
+
+// Let's create a specification for color
+class ColorSpecification {
+  constructor(color) {
+    this.color = color;
+  }
+
+  isSatisfied(item) {
+    return item.color === this.color;
+  }
+}
+
+// And now let's create a specification for size
+class SizeSpecification {
+  constructor(size) {
+    this.size = size;
+  }
+
+  isSatisfied(item) {
+    return item.size === this.size;
+  }
+}
+
+// As a result, we now have a specification mode that is free from modifications!
+// Every time we want to filter by some other attribute, we just need to create
+// another specification class.
+
+// Now, let's create a filter that uses these specifications
+class Filter2 {
+  filter(items, spec) {
+    return items.filter(item => spec.isSatisfied(item));
+  }
+}
+
+// Finally, it's time to give the new model a spin!
+let greenColorSpec = new ColorSpecification(Color.green);
+let filter2 = new Filter2();
+console.log(`Green products based on the new filter:`);
+let greens = filter2.filter(products, greenColorSpec);
+console.log(greens);
+// this gives: [ Product { name: 'Surfboard', color: 'green', size: 'large' } ]
+
