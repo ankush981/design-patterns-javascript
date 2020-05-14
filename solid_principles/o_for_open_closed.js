@@ -111,3 +111,36 @@ let greens = filter2.filter(products, greenColorSpec);
 console.log(greens);
 // this gives: [ Product { name: 'Surfboard', color: 'green', size: 'large' } ]
 
+// You might have noticed something discomforting: the specification objects
+// accept only one specification. What do we do if we want to perform multiple
+// matches? What about 'and' and 'or' combinations?
+// To solve these problems, we need what's called a Combinator.
+
+// Let's define the combinator for "and" cases.
+class AndSpecification {
+  constructor(...specs) {
+    this.specs = specs;
+  }
+
+  isSatisfied(item) {
+    return this.specs.every(spec => spec.isSatisfied(item));
+  }
+}
+
+// Now let's use this combinator to find products that are large and green
+let greenAndLargeSpec = new AndSpecification(
+  new ColorSpecification(Color.green),
+  new SizeSpecification(Size.large)
+);
+
+// let's redo the last thing again using the new spec
+let greens2 = filter2.filter(products, greenAndLargeSpec);
+console.log(`Green and large products (based on AndSpecification: )`);
+console.log(greens2);
+// this again gives: [ Product { name: 'Surfboard', color: 'green', size: 'large' } ]
+
+// The only thing to watch out for in this model is the n^2 time complexity hidden
+// in the functional style. The filter iterates over each time and tests for the
+// spec, and if that spec is a composite spec, there's another iteration over the
+// specs using the function 'every'.
+// That said, it' an incredibly useful pattern.
