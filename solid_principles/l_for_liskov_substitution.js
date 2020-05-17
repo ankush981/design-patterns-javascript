@@ -79,3 +79,44 @@ Square.prototype.setWidth = Square.prototype.setHeight = function (value) {
 let sq2 = new Square();
 sq2.setWidth(10);
 console.log(sq2.area); // 100
+
+// It's natural to have written out this clever code and feel a sense of
+// pride and accomplishment. It's perfect, right?! Well, let's see a
+// scenario where despite the perfection, the code fails because it gets
+// used in unexpected ways.
+
+// Imagine a function 'stretch' that is used to scale the images. In our
+// contrived world, let's assume that stretching means doubling the width
+// and height.
+
+function stretch(rect) {
+  let originalArea = rect.area;
+  console.log(`Before stretching, area is: ${originalArea}`);
+  rect.setWidth(rect.width * 2);
+  rect.setHeight(rect.height * 2);
+  console.log(`Expected area: ${4 * originalArea}`); // we scaled by a factor of 4
+  console.log(`Actual area: ${rect.area}`);
+}
+
+let rect2 = new Rectangle(11, 5);
+stretch(rect2);
+// this works as expected
+
+// Now, since a square is nothing but a special case of a rectangle, this should
+// work for the square as well
+let sq3 = new Square(10);
+stretch(sq3);
+
+// If you run this code, there's a huge surprise waiting:
+// Expected area: 400
+// Actual area: 1600
+
+// Now we see the problem. Because of our "clever" hack, the width and height
+// for the square got doubled twice, resulting in area that is 4 times the
+// expected value!
+
+// This example was not so much a demonstration of the Liskov Substitution principle,
+// but of its violation. When we have code that works for base classes but doesn't work
+// for derived classes, it causes unexpected bugs that are hard to understand and trace.
+// If you are using an object-oriented design, make sure the Liskov Substitution principle
+// is adhered to more or less religiously.
